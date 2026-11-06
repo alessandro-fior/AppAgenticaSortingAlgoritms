@@ -1,12 +1,13 @@
 # AppAgentica: consigli per algoritmi di ordinamento
 
-Progetto Python che cerca in un catalogo di algoritmi (Python, Java, C++, JavaScript, C#, Go, Rust e implementazioni manuali) e usa un modello OpenAI economico per consigliare quello adatto. Qdrant conserva gli embedding nel database vettoriale.
+Progetto Python che cerca in un catalogo di algoritmi (Python, Java, C++, JavaScript, C#, Go, Rust e implementazioni manuali) e usa un LLM gratuito tramite OpenRouter per consigliare quello adatto. Qdrant conserva gli embedding generati localmente con FastEmbed; l'indicizzazione non richiede crediti OpenAI.
 
 ## Requisiti
 
 - Python 3.10 o successivo
 - Docker Desktop con Docker Compose
-- Una chiave API OpenAI (gli embedding usano `text-embedding-3-small`, la chat `gpt-4o-mini`)
+- Una chiave API gratuita OpenRouter per la chat (`openrouter/free`). I modelli gratuiti hanno limiti di utilizzo e la disponibilità può variare.
+- Connessione internet al primo avvio per scaricare il modello embedding multilingue FastEmbed
 
 ## Avvio da Windows PowerShell
 
@@ -19,7 +20,7 @@ pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-Inserisci la chiave in `.env`, poi avvia il database e indicizza il catalogo:
+Inserisci in `.env` la chiave creata su OpenRouter (`OPENROUTER_API_KEY`), poi avvia il database e indicizza il catalogo:
 
 ```powershell
 docker compose up -d
@@ -31,7 +32,7 @@ La dashboard Qdrant è disponibile a `http://localhost:6333/dashboard`. Per ferm
 
 ## Jupyter Notebook
 
-Il notebook `appagentica.ipynb` importa le stesse funzioni di `app.py` e `ingest.py`, così la logica non diverge. Dopo aver installato `requirements.txt`, avvia `jupyter lab`, apri il notebook ed esegui le celle dall'alto. Le prime celle indicizzano il dataset; poi puoi chiamare `ask("Mi servono solo i 10 elementi più grandi di una lista enorme in Python")`.
+Il notebook `appagentica.ipynb` importa le stesse funzioni di `app.py` e `ingest.py`, così la logica non diverge. Dopo aver installato `requirements.txt`, avvia `jupyter lab`, apri il notebook ed esegui le celle dall'alto. La prima indicizzazione scarica il modello locale; poi puoi chiamare `ask("Mi servono solo i 10 elementi più grandi di una lista enorme in Python")`.
 
 ## File principali
 
@@ -41,4 +42,4 @@ Il notebook `appagentica.ipynb` importa le stesse funzioni di `app.py` e `ingest
 - `app.py`: prompt engine interattivo e funzione `ask()` riusabile dal notebook.
 - `docker-compose.yml`: servizio Qdrant e volume persistente.
 
-La prima indicizzazione e ogni domanda inviano testo all'API OpenAI e possono avere un costo. Aggiungi nuove schede a `algorithms.json` e rilancia `python ingest.py`.
+L'indicizzazione genera embedding sul PC. Le domande inviano il contesto e la richiesta a OpenRouter, che instrada `openrouter/free` verso un modello gratuito disponibile, soggetto ai limiti correnti del servizio. Aggiungi nuove schede a `algorithms.json` e rilancia `python ingest.py`.
