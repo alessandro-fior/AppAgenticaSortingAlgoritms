@@ -1,19 +1,9 @@
-"""Embedding locali condivisi tra ingestione e ricerca."""
-from functools import lru_cache
+"""Shim retrocompatibile: importa le funzioni di embedding da src/appagentica/embeddings.py."""
+import sys
+from pathlib import Path
 
-from fastembed import TextEmbedding
+SRC_DIR = Path(__file__).resolve().parent / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
-import config
-
-
-@lru_cache(maxsize=1)
-def get_embedding_model() -> TextEmbedding:
-    return TextEmbedding(model_name=config.EMBEDDING_MODEL)
-
-
-def embed_documents(texts: list[str]) -> list[list[float]]:
-    return [vector.tolist() for vector in get_embedding_model().passage_embed(texts)]
-
-
-def embed_query(text: str) -> list[float]:
-    return next(get_embedding_model().query_embed(text)).tolist()
+from appagentica.embeddings import embed_documents, embed_query, get_embedding_model  # noqa: F401, E402

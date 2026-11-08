@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "appagentica"
+version = "1.0.0"
+description = "Consulente RAG intelligente per algoritmi di ordinamento con Qdrant e OpenRouter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.40.0,<3.0.0",
+    "qdrant-client[fastembed]>=1.14.2,<2.0.0",
+    "python-dotenv>=1.0.0,<2.0.0",
+    "rich>=13.7.0,<15.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "jupyterlab>=4.2.0,<5.0.0",
+]
+
+[project.scripts]
+appagentica = "appagentica.rag:main"
+appagentica-ingest = "appagentica.ingest:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
